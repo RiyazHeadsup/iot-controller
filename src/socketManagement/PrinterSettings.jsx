@@ -104,7 +104,16 @@ const PrinterSettings = ({ isConnected }) => {
 
   const handleTestPrint = (printerId) => {
     const testCommand = 'Test print from IoT Controller';
-    socketConnectionManager.sendPrintCommand(printerId, testCommand);
+    const testPrintData = {
+      text: 'Test Print\nIoT Controller\nTimestamp: ' + new Date().toLocaleString(),
+      fontSize: 12,
+      alignment: 'center'
+    };
+    socketConnectionManager.sendPrintCommand(printerId, testCommand, testPrintData);
+  };
+
+  const handleOpenDrawer = (printerId) => {
+    socketConnectionManager.sendDrawerCommand(printerId);
   };
 
   const handlePrinterFormChange = (value) => {
@@ -255,6 +264,13 @@ const PrinterSettings = ({ isConnected }) => {
                       className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:bg-gray-400"
                     >
                       Test Print
+                    </button>
+                    <button 
+                      onClick={() => handleOpenDrawer(printer.printerId)}
+                      disabled={!isConnected || printer.status !== 'online'}
+                      className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:bg-gray-400"
+                    >
+                      Open Drawer
                     </button>
                   </div>
                 </div>
