@@ -1,0 +1,29 @@
+{
+  "name": "iot-controller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "NODE_ENV=development vite",
+    "build": "vite build",
+    "electron": "NODE_ENV=development electron .",
+    "electron-dev": "NODE_ENV=development nodemon --exec electron . --watch main.js --watch *.js",
+    "dev-full": "concurrently \"npm run dev\" \"npm run electron-dev\"",
+    "start": "npm run build && electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "electron": "^38.3.0",
+    "nodemon": "^3.1.10",
+    "vite": "^4.5.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.546.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}
