@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSelectedUnit, setSelectedUnit } from '../../storage/Storage';
+import SocketManager from '../socketManagement/SocketManager';
 
 const Dashboard = ({ user, onLogout }) => {
   const [selectedUnit, setSelectedUnitState] = useState(null);
@@ -75,7 +76,7 @@ const Dashboard = ({ user, onLogout }) => {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          {/* Dashboard content will go here */}
+          <SocketManager />
         </div>
       </main>
     </div>
