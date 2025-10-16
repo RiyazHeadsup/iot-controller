@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Login from './Login/Login.jsx';
-import { getAcessToken, getElevateUser } from './storage/Storage';
+import { getAcessToken, getElevateUser, setSelectedUnit, getSelectedUnit } from './storage/Storage';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedUnit, setSelectedUnitState] = useState(null);
 
   useEffect(() => {
     const token = getAcessToken();
@@ -14,6 +15,12 @@ const App = () => {
     if (token && userData) {
       setIsAuthenticated(true);
       setUser(userData);
+      
+      // Check for saved selected unit
+      const savedUnit = getSelectedUnit();
+      if (savedUnit) {
+        setSelectedUnitState(savedUnit);
+      }
     }
     
     setLoading(false);
@@ -24,10 +31,21 @@ const App = () => {
     setUser(loginData.user);
   };
 
+  const handleUnitChange = (unit) => {
+    const unitData = {
+      unitIds: unit._id,
+      unitName: unit.unitName,
+      ...unit
+    };
+    setSelectedUnit(unitData);
+    setSelectedUnitState(unitData);
+  };
+
   const handleLogout = () => {
     localStorage.clear();
     setIsAuthenticated(false);
     setUser(null);
+    setSelectedUnitState(null);
   };
 
   if (loading) {
@@ -51,6 +69,27 @@ const App = () => {
               <h1 className="text-xl font-semibold text-gray-900">IoT Controller Dashboard</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Unit Selector Dropdown */}
+              {user?.unitIds && user.unitIds.length > 0 && (
+                <div className="relative">
+                  <select
+                    value={selectedUnit?._id || ''}
+                    onChange={(e) => {
+                      const unit = user.unitIds.find(u => u._id === e.target.value);
+                      if (unit) handleUnitChange(unit);
+                    }}
+                    className="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select Unit</option>
+                    {user.unitIds.map((unit) => (
+                      <option key={unit._id} value={unit._id}>
+                        {unit.unitName} ({unit.unitCode})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
               <div className="flex items-center space-x-2">
                 <img
                   className="h-8 w-8 rounded-full"
@@ -99,10 +138,19 @@ const App = () => {
                   <p className="text-gray-600">{user?.userType}</p>
                 </div>
                 
-                {user?.unitIds && user?.unitIds.length > 0 && (
-                  <div className="bg-white p-6 rounded-lg shadow">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Unit</h3>
-                    <p className="text-gray-600">{user?.unitIds[0]?.unitName}</p>
+                {selectedUnit && (
+                  <div className="bg-blue-50 p-6 rounded-lg shadow border-2 border-blue-200">
+                    <h3 className="text-lg font-semibold text-blue-900 mb-2">Selected Unit</h3>
+                    <p className="text-blue-700 font-medium">{selectedUnit.unitName}</p>
+                    <p className="text-blue-600 text-sm mt-1">Code: {selectedUnit.unitCode}</p>
+                    <p className="text-blue-600 text-sm">ID: {selectedUnit.unitIds}</p>
+                  </div>
+                )}
+                
+                {!selectedUnit && user?.unitIds && user.unitIds.length > 0 && (
+                  <div className="bg-yellow-50 p-6 rounded-lg shadow border-2 border-yellow-200">
+                    <h3 className="text-lg font-semibold text-yellow-900 mb-2">No Unit Selected</h3>
+                    <p className="text-yellow-700">Please select a unit from the dropdown above to continue.</p>
                   </div>
                 )}
                 
